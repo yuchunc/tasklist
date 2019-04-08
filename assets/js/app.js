@@ -1,6 +1,5 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import OverView from './tasks/Overview';
 
-const HelloComponent = () => <div>This is a Component!!!</div>
-
-ReactDOM.render(<HelloComponent />, document.getElementById('mountPoint'))
+ReactDOM.render(<OverView />, document.getElementById('mountPoint'));
