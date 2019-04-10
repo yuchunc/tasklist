@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import * as R from 'ramda';
 import Detail from './Detail';
 
 const containerStyle = {
@@ -26,17 +27,22 @@ const tableStyle = {
   borderCollapse: "collapse"
 }
 
-const Overview = () => (
-  <div style={containerStyle}>
-    <div style={titleRowStyle}>
-      <h2 style={{marginBottom: "0"}}> Things To Do </h2>
-      <a sytle={groupsLinkStyle}> ALL GROUPS </a>
-    </div>
+const Overview = (props) => {
+  const [title, setTitle] = useState(props.title || "Things To Do")
+  const listItems = R.map((item) => <Detail item={item} key={item.task || item.name}/>)
 
-    <div style={tableStyle}>
-      <Detail />
+  return (
+    <div style={containerStyle}>
+      <div style={titleRowStyle}>
+        <h2 style={{marginBottom: "0"}}> {title} </h2>
+        {!!props.title && <a sytle={groupsLinkStyle}> ALL GROUPS </a>}
+      </div>
+
+      <div style={tableStyle}>
+        {listItems(props.list)}
+      </div>
     </div>
-  </div>
-);
+  )
+};
 
 export default Overview;
