@@ -29,7 +29,7 @@ const tableStyle = {
 
 const Overview = (props) => {
   const [title, setTitle] = useState(props.title || "Things To Do")
-  const listItems = R.map((item) => <Detail item={item} key={item.task || item.name}/>)
+  const listItems = R.map((item) => <Detail item={item} key={item.id || item.name}/>)
 
   return (
     <div style={containerStyle}>

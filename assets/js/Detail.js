@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ReactComponent as GroupSVG } from '../../static/images/Group.svg';
-import { ReactComponent as LockedSVG } from '../../static/images/Locked.svg';
-import { ReactComponent as IncompleteSVG } from '../../static/images/Incomplete.svg';
-import { ReactComponent as CompletedSVG } from '../../static/images/Completed.svg';
+import { ReactComponent as GroupSVG } from '../static/images/Group.svg';
+import { ReactComponent as LockedSVG } from '../static/images/Locked.svg';
+import { ReactComponent as IncompleteSVG } from '../static/images/Incomplete.svg';
+import { ReactComponent as CompletedSVG } from '../static/images/Completed.svg';
 
 const rowStyle = {
   alignItems: "center",
