@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import * as R from 'ramda';
 import Detail from './Detail';
+import { DispatchContext } from './App.js';
 
 const containerStyle = {
   width: "800px",
@@ -28,14 +29,20 @@ const tableStyle = {
 }
 
 const Overview = (props) => {
-  const [title, setTitle] = useState(props.title || "Things To Do")
-  const listItems = R.map((item) => <Detail item={item} key={item.id || item.name}/>)
+  const listItems = R.map((item) => <Detail item={item} key={item.id || item.name}/>);
+  const dispatch = useContext(DispatchContext);
+
+  const title = props.title || "Things To Do"
+
+  const handleShowGroups = () => {
+    dispatch({type: "SHOW_GROUPS"})
+  }
 
   return (
     <div style={containerStyle}>
       <div style={titleRowStyle}>
         <h2 style={{marginBottom: "0"}}> {title} </h2>
-        {!!props.title && <a sytle={groupsLinkStyle}> ALL GROUPS </a>}
+        {!!props.title && <a sytle={groupsLinkStyle} onClick={handleShowGroups}> ALL GROUPS </a>}
       </div>
 
       <div style={tableStyle}>

@@ -1,4 +1,4 @@
-export const dummyTasks = [
+export const initalTasks = [
   {
     id: 1,
     group: "Purchases",

@@ -1,7 +1,9 @@
 import React, { useReducer } from 'react';
 import * as R from 'ramda';
 import Overview from './Overview';
-import { dummyTasks }  from './initialState';
+import { initalTasks }  from './initialState';
+
+export const DispatchContext = React.createContext(null);
 
 const groupedTasks = (tasks) => {
   const applyLocked = (task) => {
@@ -32,24 +34,30 @@ const groupInfo = ([name, grouping]) => ({
 });
 
 const prepList = (filter, tasks) => {
-  if (filter !== "GROUPS")
-    return []
-  else
-    return R.compose(R.map(groupInfo), R.toPairs, groupedTasks)(tasks)
 }
 
 const displayFilterReducer = (state, action) => {
   switch (action.type) {
-    case "TASKS": return action.groupName;
-    default: return "GROUPS";
+    case "SHOW_TASKS": return action.groupName;
+    default: return "SHOW_GROUPS";
   }
 }
 
 const App = () => {
-  const [displayFilter, dispatchDisplayFilter] = useReducer(displayFilterReducer, "GROUPS")
+  const [displayFilter, dispatchDisplayFilter] = useReducer(displayFilterReducer, "SHOW_GROUPS")
+  const tasks = initalTasks
+  const dispatch = action => dispatchDisplayFilter(action);
+
+  let uiList
+  if (displayFilter !== "SHOW_GROUPS")
+    uiList = R.filter((t) => t.group === displayFilter, tasks)
+  else
+    uiList = R.compose(R.map(groupInfo), R.toPairs, groupedTasks)(tasks)
 
   return (
-    <Overview list={prepList(displayFilter, dummyTasks)}/>
+    <DispatchContext.Provider value={dispatch}>
+      <Overview list={uiList} title={uiList[0].group}/>
+    </DispatchContext.Provider>
   )
 };
 

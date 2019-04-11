@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { DispatchContext } from './App.js';
 import { ReactComponent as GroupSVG } from '../static/images/Group.svg';
 import { ReactComponent as LockedSVG } from '../static/images/Locked.svg';
 import { ReactComponent as IncompleteSVG } from '../static/images/Incomplete.svg';
@@ -43,10 +44,16 @@ const itemIcon = ({task, locked, completedAt}) => {
 }
 
 const Detail = (props) => {
-  const [item, setItem] = useState(props.item)
+  const [item, setItem] = useState(props.item);
+  const dispatch = useContext(DispatchContext);
+
+  const handleShowGroupTasks = () => {
+    if (item.id === undefined)
+      dispatch({type: "SHOW_TASKS", groupName: item.name});
+  }
 
   return (
-    <div style={rowStyle}>
+    <div style={rowStyle} onClick={handleShowGroupTasks}>
       <div style={svgStyle}>
         {itemIcon(item)}
       </div>
