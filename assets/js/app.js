@@ -5,58 +5,60 @@ import { initalTasks }  from './initialState';
 
 export const DispatchContext = React.createContext(null);
 
-const groupedTasks = (tasks) => {
-  const applyLocked = (task) => {
-    const pred = R.where({
-      id: R.contains(R.__, task.dependencyIds),
-      completedAt: R.isNil
-    });
-
-    if (task.dependencyIds == []) {
-      task.locked = false
-    } else if (R.find(pred, tasks)) {
-      task.locked = true
-    } else {
-      task.locked = false
-    };
-
-    return task
-  };
-
-  const mappedTasks = R.map(applyLocked, tasks);
-  return R.groupBy(({group}) => group, mappedTasks);
-};
-
 const groupInfo = ([name, grouping]) => ({
   name: name,
   total: R.length(grouping),
   completed: R.length(R.filter(R.isNil, grouping))
 });
 
-const prepList = (filter, tasks) => {
-}
-
-const displayFilterReducer = (state, action) => {
+const filterReducer = (state, action) => {
+  console.log("f", action);
   switch (action.type) {
     case "SHOW_TASKS": return action.groupName;
-    default: return "SHOW_GROUPS";
+    case "SHOW_GROUPS": return "SHOW_GROUPS";
+    default: state
   }
 }
 
-const App = () => {
-  const [displayFilter, dispatchDisplayFilter] = useReducer(displayFilterReducer, "SHOW_GROUPS")
-  const tasks = initalTasks
-  const dispatch = action => dispatchDisplayFilter(action);
+const tasksReducer = (state, action) => {
+  console.log("t", action);
+  switch (action.type) {
+    case "DO_TASK":
+      return R.map(task => {
+        if (task.id === action.id && task.locked === false) {
+          return {...task, completedAt: Date.now()}
+        }
 
-  let uiList
-  if (displayFilter !== "SHOW_GROUPS")
-    uiList = R.filter((t) => t.group === displayFilter, tasks)
-  else
-    uiList = R.compose(R.map(groupInfo), R.toPairs, groupedTasks)(tasks)
+        if (R.contains(action.id, task.lockedIds)) {
+          return {...task, lockedIds: R.without([action.id], task.lockedIds)}
+        }
+
+        return task
+      }, state)
+    default:
+      return state
+  }
+}
+
+const applyLockedIds = (tasks) => R.map(task => R.assoc("lockedIds", task.dependencyIds, task))(tasks)
+
+const App = () => {
+  //const [filter, dispatchFilter] = useReducer(filterReducer, "SHOW_GROUPS")
+  const [filter, dispatchFilter] = useReducer(filterReducer, "Purchases")
+  const [tasks, dispatchTasks] = useReducer(tasksReducer, applyLockedIds(initalTasks))
+
+  const dispatch = { dispatchFilter, dispatchTasks }
+
+  const uiList = (filter) => {
+    if (filter === "SHOW_GROUPS")
+      return R.compose(R.map(groupInfo), R.toPairs, R.groupBy(({group}) => group))(tasks)
+    else
+      return R.filter((t) => t.group === filter, tasks)
+  }
 
   return (
-    <DispatchContext.Provider value={dispatch}>
-      <Overview list={uiList} title={uiList[0].group}/>
+    <DispatchContext.Provider value={{dispatchFilter, dispatchTasks}}>
+      <Overview list={uiList(filter)} title={uiList(filter)[0].group}/>
     </DispatchContext.Provider>
   )
 };

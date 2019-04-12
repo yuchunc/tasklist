@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import * as R from 'ramda';
 import { DispatchContext } from './App.js';
 import { ReactComponent as GroupSVG } from '../static/images/Group.svg';
 import { ReactComponent as LockedSVG } from '../static/images/Locked.svg';
@@ -32,28 +33,34 @@ const itemSubTextStyle = {
   color: "darkgray"
 }
 
-const itemIcon = ({task, locked, completedAt}) => {
+const itemIcon = ({task, lockedIds, completedAt}) => {
   if (task === undefined)
     return <GroupSVG />
-  else if (locked === true)
+  if (lockedIds.length > 0)
     return <LockedSVG />
-  else if (completedAt === null)
+  if (completedAt === null)
     return <IncompleteSVG />
-  else
+  if (completedAt !== null)
     return <CompletedSVG />
+
+  return false
 }
 
 const Detail = (props) => {
   const [item, setItem] = useState(props.item);
-  const dispatch = useContext(DispatchContext);
+  const { dispatchFilter } = useContext(DispatchContext);
 
-  const handleShowGroupTasks = () => {
+  const handleClickRow = () => {
     if (item.id === undefined)
-      dispatch({type: "SHOW_TASKS", groupName: item.name});
+      dispatchFilter({type: "SHOW_TASKS", groupName: item.name});
+      return false
+
+    //if (R.isEmpty(item.lockedIds))
+      //dispatch({type: "DO_TASK", id: item.id})
   }
 
   return (
-    <div style={rowStyle} onClick={handleShowGroupTasks}>
+    <div style={rowStyle} onClick={handleClickRow}>
       <div style={svgStyle}>
         {itemIcon(item)}
       </div>
