@@ -32,9 +32,7 @@ const Overview = (props) => {
   const { tasks, dispatch } = useContext(DispatchContext);
 
   const title = props.title || "Things To Do"
-
   const handleShowGroups = () => dispatch.dispatchFilter({type: "SHOW_GROUPS"})
-
   const listItems = R.map((item) => <Detail item={item} key={item.id || item.name}/>);
 
   return (

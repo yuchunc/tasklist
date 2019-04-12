@@ -8,7 +8,7 @@ export const DispatchContext = React.createContext(null);
 const groupInfo = ([name, grouping]) => ({
   name: name,
   total: R.length(grouping),
-  completed: R.length(R.filter(R.isNil, grouping))
+  completed: R.compose(R.length, R.filter(t => !R.isNil(t.completedAt)))(grouping)
 });
 
 const filterReducer = (state, action) => {
@@ -64,7 +64,6 @@ const App = () => {
   const [tasks, dispatchTasks] = useReducer(tasksReducer, initalTasks, applyLockedIds)
 
   const dispatch = { dispatchFilter, dispatchTasks }
-
   const list = getList(filter, tasks)
 
   return (
