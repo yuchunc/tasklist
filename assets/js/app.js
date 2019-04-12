@@ -33,6 +33,18 @@ const tasksReducer = (state, action) => {
 
         return task
       }, state)
+    case "UNDO_TASK":
+      return R.map(task => {
+        if (task.id === action.id && task.lockedIds.length === 0 && !R.isNil(task.completedAt)) {
+          return {...task, completedAt: null}
+        }
+
+        if (R.contains(action.id, task.dependencyIds)) {
+          return {...task, lockedIds: R.append(action.id, task.lockedIds)}
+        }
+
+        return task
+      }, state)
     default:
       return state
   }
@@ -48,7 +60,7 @@ const getList = (filter, tasks) => {
 const applyLockedIds = (tasks) => R.map(task => R.assoc("lockedIds", task.dependencyIds, task))(tasks)
 
 const App = () => {
-  const [filter, dispatchFilter] = useReducer(filterReducer, "Build Airplane")
+  const [filter, dispatchFilter] = useReducer(filterReducer, "SHOW_GROUPS")
   const [tasks, dispatchTasks] = useReducer(tasksReducer, initalTasks, applyLockedIds)
 
   const dispatch = { dispatchFilter, dispatchTasks }

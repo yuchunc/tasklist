@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import * as R from 'ramda';
 import { DispatchContext } from './App.js';
 import { ReactComponent as GroupSVG } from '../static/images/Group.svg';
 import { ReactComponent as LockedSVG } from '../static/images/Locked.svg';
@@ -54,8 +53,12 @@ const Detail = ({item}) => {
       dispatch.dispatchFilter({type: "SHOW_TASKS", groupName: item.name});
       return false
     }
-    if (item.lockedIds.length === 0 && item.completedAt !== undefined) {
+    if (item.lockedIds.length === 0 && item.completedAt === null) {
       dispatch.dispatchTasks({type: "DO_TASK", id: item.id})
+      return false
+    }
+    if (item.completedAt !== null) {
+      dispatch.dispatchTasks({type: "UNDO_TASK", id: item.id})
       return false
     }
   }
