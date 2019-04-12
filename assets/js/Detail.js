@@ -46,17 +46,18 @@ const itemIcon = ({task, lockedIds, completedAt}) => {
   return false
 }
 
-const Detail = (props) => {
-  const [item, setItem] = useState(props.item);
-  const { dispatchFilter } = useContext(DispatchContext);
+const Detail = ({item}) => {
+  const { tasks, dispatch } = useContext(DispatchContext);
 
   const handleClickRow = () => {
-    if (item.id === undefined)
-      dispatchFilter({type: "SHOW_TASKS", groupName: item.name});
+    if (item.id === undefined) {
+      dispatch.dispatchFilter({type: "SHOW_TASKS", groupName: item.name});
       return false
-
-    //if (R.isEmpty(item.lockedIds))
-      //dispatch({type: "DO_TASK", id: item.id})
+    }
+    if (item.lockedIds.length === 0 && item.completedAt !== undefined) {
+      dispatch.dispatchTasks({type: "DO_TASK", id: item.id})
+      return false
+    }
   }
 
   return (

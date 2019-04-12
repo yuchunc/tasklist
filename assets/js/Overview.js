@@ -29,12 +29,13 @@ const tableStyle = {
 }
 
 const Overview = (props) => {
-  const listItems = R.map((item) => <Detail item={item} key={item.id || item.name}/>);
-  const { dispatchFilter } = useContext(DispatchContext);
+  const { tasks, dispatch } = useContext(DispatchContext);
 
   const title = props.title || "Things To Do"
 
-  const handleShowGroups = () => dispatchFilter({type: "SHOW_GROUPS"})
+  const handleShowGroups = () => dispatch.dispatchFilter({type: "SHOW_GROUPS"})
+
+  const listItems = R.map((item) => <Detail item={item} key={item.id || item.name}/>);
 
   return (
     <div style={containerStyle}>

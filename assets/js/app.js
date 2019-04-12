@@ -12,7 +12,6 @@ const groupInfo = ([name, grouping]) => ({
 });
 
 const filterReducer = (state, action) => {
-  console.log("f", action);
   switch (action.type) {
     case "SHOW_TASKS": return action.groupName;
     case "SHOW_GROUPS": return "SHOW_GROUPS";
@@ -21,11 +20,10 @@ const filterReducer = (state, action) => {
 }
 
 const tasksReducer = (state, action) => {
-  console.log("t", action);
   switch (action.type) {
     case "DO_TASK":
       return R.map(task => {
-        if (task.id === action.id && task.locked === false) {
+        if (task.id === action.id && task.lockedIds.length === 0 && R.isNil(task.completedAt)) {
           return {...task, completedAt: Date.now()}
         }
 
@@ -40,25 +38,26 @@ const tasksReducer = (state, action) => {
   }
 }
 
+const getList = (filter, tasks) => {
+  if (filter === "SHOW_GROUPS")
+    return R.compose(R.map(groupInfo), R.toPairs, R.groupBy(({group}) => group))(tasks)
+  else
+    return R.filter((t) => t.group === filter, tasks)
+}
+
 const applyLockedIds = (tasks) => R.map(task => R.assoc("lockedIds", task.dependencyIds, task))(tasks)
 
 const App = () => {
-  //const [filter, dispatchFilter] = useReducer(filterReducer, "SHOW_GROUPS")
-  const [filter, dispatchFilter] = useReducer(filterReducer, "Purchases")
-  const [tasks, dispatchTasks] = useReducer(tasksReducer, applyLockedIds(initalTasks))
+  const [filter, dispatchFilter] = useReducer(filterReducer, "Build Airplane")
+  const [tasks, dispatchTasks] = useReducer(tasksReducer, initalTasks, applyLockedIds)
 
   const dispatch = { dispatchFilter, dispatchTasks }
 
-  const uiList = (filter) => {
-    if (filter === "SHOW_GROUPS")
-      return R.compose(R.map(groupInfo), R.toPairs, R.groupBy(({group}) => group))(tasks)
-    else
-      return R.filter((t) => t.group === filter, tasks)
-  }
+  const list = getList(filter, tasks)
 
   return (
-    <DispatchContext.Provider value={{dispatchFilter, dispatchTasks}}>
-      <Overview list={uiList(filter)} title={uiList(filter)[0].group}/>
+    <DispatchContext.Provider value={{ tasks, dispatch }}>
+      <Overview list={list} title={list[0].group}/>
     </DispatchContext.Provider>
   )
 };
