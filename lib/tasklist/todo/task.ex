@@ -6,6 +6,7 @@ defmodule Tasklist.Todo.Task do
     field :dependency_ids, {:array, :integer}
     field :name, :string
     field :group_id, :id
+    field :completed_at, :naive_datetime
 
     timestamps()
   end
