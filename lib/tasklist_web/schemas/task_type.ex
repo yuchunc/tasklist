@@ -1,7 +1,7 @@
 defmodule TasklistWeb.TaskType do
   use Absinthe.Schema.Notation
 
-  object :task_object do
+  object :task do
     field :id, non_null(:id), description: "Task Id"
 
     field :task,

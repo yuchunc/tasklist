@@ -4,7 +4,7 @@ defmodule TasklistWeb.Schema do
   import_types(TasklistWeb.TaskType)
 
   query do
-    field :tasks, list_of(:task_object) do
+    field :tasks, list_of(:task) do
       description("Get all tasks")
 
       resolve([
@@ -65,6 +65,16 @@ defmodule TasklistWeb.Schema do
           completed_at: nil
         }
       ])
+    end
+  end
+
+  mutation do
+    field :toggle_task_completion, type: :task do
+      description("Toggle task completion state by setting completedAt time")
+
+      arg(:id, non_null(:id))
+      # TODO implement the actual toggling
+      resolve(true)
     end
   end
 end
