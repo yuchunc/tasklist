@@ -11,6 +11,11 @@ defmodule TasklistWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
+      pass: ["*/*"],
+      json_decoder: Jason
   end
 
   scope "/", TasklistWeb do
@@ -19,8 +24,10 @@ defmodule TasklistWeb.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", TasklistWeb do
-  #   pipe_through :api
-  # end
+  scope "/" do
+    pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: TasklistWeb.Schema
+    forward "/graph", Absinthe.Plug, schema: TasklistWeb.Schema
+  end
 end

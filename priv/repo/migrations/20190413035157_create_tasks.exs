@@ -6,6 +6,7 @@ defmodule Tasklist.Repo.Migrations.CreateTasks do
       add :name, :string
       add :dependency_ids, {:array, :integer}
       add :group_id, references(:groups, on_delete: :nothing)
+      add :completed_at, :naive_datetime
 
       timestamps()
     end
